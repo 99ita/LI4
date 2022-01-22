@@ -1,0 +1,35 @@
+-Mapa rip
+
+
+-Hotel:
+    -Remover raio de interessse
+    -avaliacao para no de gostos
+
+
+
+
+
+Utilizador:
+    -gostos=favoritos List<idHotel>
+
+
+
+
+Localização:
+    -adicionar morada
+
+
+
+
+Hotel
+    Localizacao
+    Descricao
+    Restauracao
+    Lotacao
+
+
+
+
+
+
+
