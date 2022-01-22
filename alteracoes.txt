@@ -26,9 +26,25 @@ Hotel
     Descricao
     Restauracao
     Lotacao
+    nº de gostos
+
+Localizacao
+    distrito
+    concelho
+    freguesia
+    morada
+
+Utilizador
+    Username
+    Password
+    Email
+    Telemovel
+    Gostos
 
 
-
+HFinder
+    lista de users
+    lista de hoteis
 
 
 
