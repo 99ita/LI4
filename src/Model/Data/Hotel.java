@@ -1,5 +1,7 @@
 package Model.Data;
 
+import Model.Location;
+
 public class Hotel {
     public Hotel(Location location, String descricao, String restauracao, int lotacao, int gostos) {
         this.location = location;

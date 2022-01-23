@@ -8,9 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+
+
 public class MainView implements ActionListener {
-    private boolean auth;
     private HFinder controller;
+    private boolean auth;
+    private int currFrame; //0 - Base; 1- login; 2- register; 3- listing
     private JFrame main;
 
     //Main menu
@@ -30,10 +34,11 @@ public class MainView implements ActionListener {
     private JLabel email;
     private JLabel telemovel;
     private JLabel erro;
+    private JLabel success;
 
     private JTextField usernameText;
-    private JTextField passwordText;
-    private JTextField confPasswordText;
+    private JPasswordField passwordText;
+    private JPasswordField confPasswordText;
     private JTextField emailText;
     private JTextField telemovelText;
 
@@ -50,12 +55,21 @@ public class MainView implements ActionListener {
     private JList<String> listAux1;
     private JScrollPane scrollPane;
 
-
+    public static void main(String[] args) {
+        new MainView();
+    }
 
 
     public MainView(){
+        currFrame = 0;
         auth = false;
         main = new JFrame("HFinder");
+        main.setSize(720,720);
+        main.setLayout(null);
+        main.setLocationRelativeTo(null);
+        main.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        main.setVisible(true);
+
         ArrayList<Rectangle> distPos = new ArrayList<>();
         distPos.add(new Rectangle(1,2,10,10));// Viana do castelo
         distPos.add(new Rectangle(1,2,10,10));// Braga
@@ -186,11 +200,17 @@ public class MainView implements ActionListener {
         erro.setBounds(1,2,3,4);
         main.add(erro);
 
+        success = new JLabel("Sucesso!");
+        success.setBounds(1,2,3,4);
+        main.add(success);
 
 
+        baseFrame();
     }
 
     public void clearAll(){
+        erro.setVisible(false);
+        success.setVisible(false);
         hideMap();
         login(false);
         register(false);
@@ -198,9 +218,12 @@ public class MainView implements ActionListener {
     }
 
     public void listing(int dist, boolean b){
+        currFrame = 3;
         if(b){
             DefaultListModel<String> listAux = new DefaultListModel<>();
-            for (String h : controller.getListHotels(dist)){
+            ArrayList<String> aux = new ArrayList<>();
+            aux.add("abcd");aux.add("efgh");aux.add("ijkl");
+            for (String h : aux){//controller.getListHotels(dist)){
                 listAux.addElement(h);
             }
             panel = new JPanel(new BorderLayout());
@@ -213,7 +236,7 @@ public class MainView implements ActionListener {
             panel.add(scrollPane);
             main.add(panel);
 
-            distrito = new JLabel("Hoteis em " + controller.getDistrictString(dist));
+            distrito = new JLabel("Hoteis em "); //+ controller.getDistrictString(dist));
             clearAll();
             panel.setVisible(true);
             distrito.setVisible(true);
@@ -221,16 +244,17 @@ public class MainView implements ActionListener {
             select.setVisible(true);
 
         }else{
-            panel.setVisible(false);
-            distrito.setVisible(false);
-            back.setVisible(false);
-            select.setVisible(false);
+            if(panel != null) panel.setVisible(false);
+            if(distrito != null) distrito.setVisible(false);
+            if(back != null) back.setVisible(false);
+            if(select != null) select.setVisible(false);
 
         }
     }
 
     public void login(boolean b){
-        clearAll();
+        currFrame = 1;
+        if(b) clearAll();
         confirm.setVisible(b);
         back.setVisible(b);
         username.setVisible(b);
@@ -238,7 +262,8 @@ public class MainView implements ActionListener {
     }
 
     public void register(boolean b){
-        clearAll();
+        currFrame = 2;
+        if(b)clearAll();
         confirm.setVisible(b);
         back.setVisible(b);
         username.setVisible(b);
@@ -249,6 +274,7 @@ public class MainView implements ActionListener {
     }
 
     public void baseFrame(){
+        currFrame = 0;
         clearAll();
         mapa.setVisible(true);
         if(auth){
@@ -261,13 +287,14 @@ public class MainView implements ActionListener {
             logout.setVisible(false);
         }
         for(int i = 0; i < 20; i++){
-            if(controller.distHasHotels(i)) dists.get(i).setVisible(true);
+            if(true/*controller.distHasHotels(i)*/) dists.get(i).setVisible(true);
             else dists.get(i).setVisible(false);
         }
     }
 
 
     public void hideMap(){
+
         mapa.setVisible(false);
 
         register.setVisible(false);
@@ -281,20 +308,42 @@ public class MainView implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        boolean done = false;
         for(int i = 0; i < 20; i++){
             if (e.getSource() == dists.get(i)){
-                listing(i);
-                done = true;
+                listing(i,true);
+                currFrame = 3;
                 break;
             }
         }
-        if(!done){
-            if(e.getSource() == login){
-                login(true);
-            } else if (e.getSource() == register){
-                register(true);
+        if(e.getSource() == login){
+            login(true);
+            currFrame = 1;
+        } else if(e.getSource() == register){
+            register(true);
+            currFrame = 2;
+        } else if(e.getSource() == back){
+            baseFrame();
+            currFrame = 0;
+        } else if(e.getSource() == confirm){
+            switch(currFrame){
+                case 1:
+                    try {
+                        //controller.login(usernameText.getText(), String.valueOf(passwordText.getPassword()));
+                        success.setVisible(true);
+                        break;
+                    }catch (Exception ex){
+                        erro.setVisible(true);
+                    }
+                case 2:
+                    try {
+                        //controller.register(usernameText.getText(), String.valueOf(passwordText.getPassword()), String.valueOf(confPasswordText.getPassword()), emailText.getText(), telemovelText.getText());
+                        success.setVisible(true);
+                        break;
+                    }catch (Exception ex){
+                        erro.setVisible(true);
+                    }
             }
+
         }
     }
 }
