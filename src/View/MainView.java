@@ -2,26 +2,45 @@ package View;
 
 import Controller.HFinder;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+
+class ImagePanel extends JPanel {
+    private Image image;
+    public ImagePanel(Image image) {
+        this.image = image;
+    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(image, 0, 0, this);
+    }
+}
+
+
 
 
 public class MainView implements ActionListener {
     private HFinder controller;
     private boolean auth;
     private int currFrame; //0 - Base; 1- login; 2- register; 3- listing
+    private ImagePanel mapaPanel;
+    private ImagePanel blankPanel;
+
     private JFrame main;
 
     //Main menu
     private Icon logoPic = new ImageIcon("images\\logo.png");
-    private Icon mapaPic = new ImageIcon("images\\mapa.png");
 
-    private JLabel mapa;
     private ArrayList<JButton> dists;
     private JButton login;
     private JButton register;
@@ -55,24 +74,35 @@ public class MainView implements ActionListener {
     private JList<String> listAux1;
     private JScrollPane scrollPane;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new MainView();
     }
 
 
-    public MainView(){
+    public MainView() throws IOException {
         currFrame = 0;
         auth = false;
+
+
+        BufferedImage mapaPng = ImageIO.read(new File("images\\mapa.png"));
+        mapaPanel = new ImagePanel(mapaPng);
+        BufferedImage blankPng = ImageIO.read(new File("images\\blank.png"));
+        blankPanel = new ImagePanel(blankPng);
+
         main = new JFrame("HFinder");
-        main.setSize(720,720);
+        main.setSize(720,760);
+
+        main.setContentPane(mapaPanel);
+
         main.setLayout(null);
         main.setLocationRelativeTo(null);
         main.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        main.setResizable(false);
         main.setVisible(true);
 
         ArrayList<Rectangle> distPos = new ArrayList<>();
-        distPos.add(new Rectangle(1,2,10,10));// Viana do castelo
-        distPos.add(new Rectangle(1,2,10,10));// Braga
+        distPos.add(new Rectangle(500,510,10,10));// Viana do castelo
+        distPos.add(new Rectangle(490,520,10,10));// Braga
         distPos.add(new Rectangle(1,2,10,10));// Vila Real
         distPos.add(new Rectangle(1,2,10,10));// Bragança
         distPos.add(new Rectangle(1,2,10,10));// Porto
@@ -92,9 +122,6 @@ public class MainView implements ActionListener {
         distPos.add(new Rectangle(1,2,10,10));// Madeira
         distPos.add(new Rectangle(1,2,10,10));// Acores
 
-        //Mapa
-        mapa = new JLabel(mapaPic);
-        main.add(mapa);
 
 
         //--------------------------Main menu--------------------------
@@ -110,13 +137,13 @@ public class MainView implements ActionListener {
         //Login
         login = new JButton("Login");
         login.addActionListener(this);
-        login.setBounds(1,2,3,4);
+        login.setBounds(2,2,100,20);
         main.add(login);
 
         //Registo
         register = new JButton("Registar");
         register.addActionListener(this);
-        register.setBounds(1,2,3,4);
+        register.setBounds(103,2,100,20);
         main.add(register);
 
         //TerminarSessao
@@ -236,7 +263,7 @@ public class MainView implements ActionListener {
             panel.add(scrollPane);
             main.add(panel);
 
-            distrito = new JLabel("Hoteis em "); //+ controller.getDistrictString(dist));
+            distrito = new JLabel("Hoteis em "); // controller.getDistrictString(dist));
             clearAll();
             panel.setVisible(true);
             distrito.setVisible(true);
@@ -276,7 +303,6 @@ public class MainView implements ActionListener {
     public void baseFrame(){
         currFrame = 0;
         clearAll();
-        mapa.setVisible(true);
         if(auth){
             register.setVisible(false);
             login.setVisible(false);
@@ -294,8 +320,6 @@ public class MainView implements ActionListener {
 
 
     public void hideMap(){
-
-        mapa.setVisible(false);
 
         register.setVisible(false);
         login.setVisible(false);
