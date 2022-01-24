@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Location {
-    private String distrito;
+    private int distrito;
     private String concelho;
     private String freguesia;
     private String morada;
 
 
 
-    public Location(String distrito, String concelho, String freguesia, String morada){
+    public Location(int distrito, String concelho, String freguesia, String morada){
         this.distrito = distrito;
         this.concelho = concelho;
         this.freguesia = freguesia;
@@ -19,11 +19,11 @@ public class Location {
     }
 
 
-    public String getDistrito() {
+    public int getDistrito() {
         return distrito;
     }
 
-    public void setDistrito(String distrito) {
+    public void setDistrito(int distrito) {
         this.distrito = distrito;
     }
 

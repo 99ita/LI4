@@ -26,15 +26,46 @@ class ImagePanel extends JPanel {
     }
 }
 
+class FirstView implements ActionListener{
+    private JFrame main;
 
+    public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        new FirstView();
+    }
+
+    public FirstView(){
+        main = new JFrame("HFinder");
+        main.setSize(720,760);
+        main.setLayout(null);
+        main.setLocationRelativeTo(null);
+        main.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        main.setResizable(false);
+        main.setVisible(true);
+
+        JButton button = new JButton("Entrar");
+        button.setBounds(250,300,220,100);
+        button.addActionListener(this);
+        main.add(button);
+        button.setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        main.dispose();
+        try {
+            new MainView(new HFinder(), false, 0);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
 
 
 public class MainView implements ActionListener {
     private HFinder controller;
     private boolean auth;
-    private int currFrame; //0 - Base; 1- login; 2- register; 3- listing
-    private ImagePanel mapaPanel;
-    private ImagePanel blankPanel;
+    private int authId;
 
     private JFrame main;
 
@@ -45,49 +76,21 @@ public class MainView implements ActionListener {
     private JButton login;
     private JButton register;
     private JButton logout;
-
-    //Login/registo menu
-    private JLabel username;
-    private JLabel password;
-    private JLabel confPassword;
-    private JLabel email;
-    private JLabel telemovel;
-    private JLabel erro;
-    private JLabel success;
-
-    private JTextField usernameText;
-    private JPasswordField passwordText;
-    private JPasswordField confPasswordText;
-    private JTextField emailText;
-    private JTextField telemovelText;
+    private JButton edit;
+    private JButton editLikes;
 
 
-    private JButton confirm;
-    private JButton back;
-
-    //Listagem
-    private JLabel distrito;
-    private JButton select;
-
-    private DefaultListModel<String> listAux;
-    private JPanel panel;
-    private JList<String> listAux1;
-    private JScrollPane scrollPane;
-
-    public static void main(String[] args) throws IOException {
-        new MainView();
-    }
 
 
-    public MainView() throws IOException {
-        currFrame = 0;
-        auth = false;
+    public MainView(HFinder controller, boolean auth, int authId) throws IOException {
+
+        this.controller = controller;
+        this.auth = auth;
+        this.authId = authId;
 
 
         BufferedImage mapaPng = ImageIO.read(new File("images\\mapa.png"));
-        mapaPanel = new ImagePanel(mapaPng);
-        BufferedImage blankPng = ImageIO.read(new File("images\\blank.png"));
-        blankPanel = new ImagePanel(blankPng);
+        ImagePanel mapaPanel = new ImagePanel(mapaPng);
 
         main = new JFrame("HFinder");
         main.setSize(720,760);
@@ -101,26 +104,26 @@ public class MainView implements ActionListener {
         main.setVisible(true);
 
         ArrayList<Rectangle> distPos = new ArrayList<>();
-        distPos.add(new Rectangle(500,510,10,10));// Viana do castelo
-        distPos.add(new Rectangle(490,520,10,10));// Braga
-        distPos.add(new Rectangle(1,2,10,10));// Vila Real
-        distPos.add(new Rectangle(1,2,10,10));// Bragança
-        distPos.add(new Rectangle(1,2,10,10));// Porto
-        distPos.add(new Rectangle(1,2,10,10));// Aveiro
-        distPos.add(new Rectangle(1,2,10,10));// Viseu
-        distPos.add(new Rectangle(1,2,10,10));// Guarda
-        distPos.add(new Rectangle(1,2,10,10));// Coimbra
-        distPos.add(new Rectangle(1,2,10,10));// Castelo Branco
-        distPos.add(new Rectangle(1,2,10,10));// Leiria
-        distPos.add(new Rectangle(1,2,10,10));// Santarém
-        distPos.add(new Rectangle(1,2,10,10));// Portalegre
-        distPos.add(new Rectangle(1,2,10,10));// Lisboa
-        distPos.add(new Rectangle(1,2,10,10));// Setubal
-        distPos.add(new Rectangle(1,2,10,10));// Evora
-        distPos.add(new Rectangle(1,2,10,10));// Beja
-        distPos.add(new Rectangle(1,2,10,10));// Faro
-        distPos.add(new Rectangle(1,2,10,10));// Madeira
-        distPos.add(new Rectangle(1,2,10,10));// Acores
+        distPos.add(new Rectangle(385,51,15,15));// Viana do castelo
+        distPos.add(new Rectangle(420,74,15,15));// Braga
+        distPos.add(new Rectangle(488,109,15,15));// Vila Real
+        distPos.add(new Rectangle(597,42,15,15));// Bragança
+        distPos.add(new Rectangle(399,124,15,15));// Porto
+        distPos.add(new Rectangle(397,198,15,15));// Aveiro
+        distPos.add(new Rectangle(469,200,15,15));// Viseu
+        distPos.add(new Rectangle(540,218,15,15));// Guarda
+        distPos.add(new Rectangle(428,263,15,15));// Coimbra
+        distPos.add(new Rectangle(509,322,15,15));// Castelo Branco
+        distPos.add(new Rectangle(380,326,15,15));// Leiria
+        distPos.add(new Rectangle(388,393,15,15));// Santarém
+        distPos.add(new Rectangle(521,393,15,15));// Portalegre
+        distPos.add(new Rectangle(338,465,15,15));// Lisboa
+        distPos.add(new Rectangle(365,493,15,15));// Setubal
+        distPos.add(new Rectangle(455,482,15,15));// Evora
+        distPos.add(new Rectangle(448,566,15,15));// Beja
+        distPos.add(new Rectangle(471,706,15,15));// Faro
+        distPos.add(new Rectangle(139,437,15,15));// Madeira
+        distPos.add(new Rectangle(136,254,15,15));// Acores
 
 
 
@@ -149,225 +152,72 @@ public class MainView implements ActionListener {
         //TerminarSessao
         logout = new JButton("Logout");
         logout.addActionListener(this);
-        logout.setBounds(1,2,3,4);
+        logout.setBounds(2,2,100,30);
         main.add(logout);
 
+        //editar perfil
+        edit = new JButton("Editar perfil");
+        edit.addActionListener(this);
+        edit.setBounds(104,2,100,30);
+        main.add(edit);
 
-        //--------------------------login--------------------------
-
-        confirm = new JButton("Confirmar");
-        confirm.setBounds(1,2,3,4);
-        main.add(confirm);
-
-        back = new JButton("Voltar");
-        back.setBounds(1,2,3,4);
-        main.add(back);
-
-        username = new JLabel("Usuário:");
-        username.setBounds(1,2,3,4);
-        main.add(username);
-
-        password = new JLabel("Password:");
-        password.setBounds(1,2,3,4);
-        main.add(password);
-
-        erro = new JLabel("Dados inválidos!");
-        erro.setBounds(1,2,3,4);
-        main.add(erro);
-
-
-
-        //--------------------------Registo--------------------------
-
-        confirm = new JButton("Confirmar");
-        confirm.setBounds(1,2,3,4);
-        main.add(confirm);
-
-        back = new JButton("Voltar");
-        back.setBounds(1,2,3,4);
-        main.add(back);
-
-        username = new JLabel("Nome de Usuário:");
-        username.setBounds(1,2,3,4);
-        main.add(username);
-        usernameText = new JTextField();
-        usernameText.setBounds(1,2,3,4);
-        main.add(usernameText);
-
-        password = new JLabel("Password:");
-        password.setBounds(1,2,3,4);
-        main.add(password);
-        passwordText = new JPasswordField();
-        passwordText.setBounds(1,2,3,4);
-        main.add(passwordText);
-
-        confPassword = new JLabel("Confirme Password:");
-        confPassword.setBounds(1,2,3,4);
-        main.add(confPassword);
-        confPasswordText = new JPasswordField();
-        confPasswordText.setBounds(1,2,3,4);
-        main.add(confPasswordText);
-
-
-        email = new JLabel("Email:");
-        email.setBounds(1,2,3,4);
-        main.add(email);
-        emailText = new JTextField();
-        emailText.setBounds(1,2,3,4);
-        main.add(emailText);
-
-        telemovel = new JLabel("Número de Telemovel:");
-        telemovel.setBounds(1,2,3,4);
-        main.add(telemovel);
-        telemovelText = new JTextField();
-        telemovelText.setBounds(1,2,3,4);
-        main.add(telemovelText);
-
-        erro = new JLabel("Dados inválidos!");
-        erro.setBounds(1,2,3,4);
-        main.add(erro);
-
-        success = new JLabel("Sucesso!");
-        success.setBounds(1,2,3,4);
-        main.add(success);
-
+        //editar gostos
+        editLikes = new JButton("Editar gostos");
+        editLikes.addActionListener(this);
+        editLikes.setBounds(206,2,100,30);
+        main.add(editLikes);
 
         baseFrame();
     }
 
-    public void clearAll(){
-        erro.setVisible(false);
-        success.setVisible(false);
-        hideMap();
-        login(false);
-        register(false);
-        listing(0,false);
-    }
-
-    public void listing(int dist, boolean b){
-        currFrame = 3;
-        if(b){
-            DefaultListModel<String> listAux = new DefaultListModel<>();
-            ArrayList<String> aux = new ArrayList<>();
-            aux.add("abcd");aux.add("efgh");aux.add("ijkl");
-            for (String h : aux){//controller.getListHotels(dist)){
-                listAux.addElement(h);
-            }
-            panel = new JPanel(new BorderLayout());
-            listAux1 = new JList<>(listAux);
-            panel.setBounds(60, 60, 495, 300);
-            scrollPane = new JScrollPane();
-            select = new JButton("Consultar Informação");
-            scrollPane.setViewportView(listAux1);
-            listAux1.setLayoutOrientation(JList.VERTICAL);
-            panel.add(scrollPane);
-            main.add(panel);
-
-            distrito = new JLabel("Hoteis em "); // controller.getDistrictString(dist));
-            clearAll();
-            panel.setVisible(true);
-            distrito.setVisible(true);
-            back.setVisible(true);
-            select.setVisible(true);
-
-        }else{
-            if(panel != null) panel.setVisible(false);
-            if(distrito != null) distrito.setVisible(false);
-            if(back != null) back.setVisible(false);
-            if(select != null) select.setVisible(false);
-
-        }
-    }
-
-    public void login(boolean b){
-        currFrame = 1;
-        if(b) clearAll();
-        confirm.setVisible(b);
-        back.setVisible(b);
-        username.setVisible(b);
-        password.setVisible(b);
-    }
-
-    public void register(boolean b){
-        currFrame = 2;
-        if(b)clearAll();
-        confirm.setVisible(b);
-        back.setVisible(b);
-        username.setVisible(b);
-        password.setVisible(b);
-        confPassword.setVisible(b);
-        email.setVisible(b);
-        telemovel.setVisible(b);
-    }
-
     public void baseFrame(){
-        currFrame = 0;
-        clearAll();
         if(auth){
             register.setVisible(false);
             login.setVisible(false);
             logout.setVisible(true);
+            edit.setVisible(true);
+            editLikes.setVisible(true);
         }else{
             register.setVisible(true);
             login.setVisible(true);
             logout.setVisible(false);
+            edit.setVisible(false);
+            editLikes.setVisible(false);
         }
         for(int i = 0; i < 20; i++){
-            if(true/*controller.distHasHotels(i)*/) dists.get(i).setVisible(true);
+            if(controller.distritoHasHotels(i)) dists.get(i).setVisible(true);
             else dists.get(i).setVisible(false);
-        }
-    }
-
-
-    public void hideMap(){
-
-        register.setVisible(false);
-        login.setVisible(false);
-        logout.setVisible(false);
-
-        for(int i = 0; i < 20; i++){
-            dists.get(i).setVisible(false);
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for(int i = 0; i < 20; i++){
-            if (e.getSource() == dists.get(i)){
-                listing(i,true);
-                currFrame = 3;
-                break;
+        try {
+            for (int i = 0; i < 20; i++) {
+                if (e.getSource() == dists.get(i)) {
+                    main.dispose();
+                    new UserView(i, controller, auth, authId);
+                    break;
+                }
             }
-        }
-        if(e.getSource() == login){
-            login(true);
-            currFrame = 1;
-        } else if(e.getSource() == register){
-            register(true);
-            currFrame = 2;
-        } else if(e.getSource() == back){
-            baseFrame();
-            currFrame = 0;
-        } else if(e.getSource() == confirm){
-            switch(currFrame){
-                case 1:
-                    try {
-                        //controller.login(usernameText.getText(), String.valueOf(passwordText.getPassword()));
-                        success.setVisible(true);
-                        break;
-                    }catch (Exception ex){
-                        erro.setVisible(true);
-                    }
-                case 2:
-                    try {
-                        //controller.register(usernameText.getText(), String.valueOf(passwordText.getPassword()), String.valueOf(confPasswordText.getPassword()), emailText.getText(), telemovelText.getText());
-                        success.setVisible(true);
-                        break;
-                    }catch (Exception ex){
-                        erro.setVisible(true);
-                    }
+            if(e.getSource() == logout){
+                main.dispose();
+                new FirstView();
+            } else if (e.getSource() == login) {
+                main.dispose();
+                new UserView(100, controller, false, authId);
+            } else if (e.getSource() == register) {
+                main.dispose();
+                new UserView(200, controller, false, authId);
+            }else if(e.getSource() == edit){
+                main.dispose();
+                new UserView(600+authId,controller,auth,authId);
+            }else if(e.getSource() == editLikes){
+                main.dispose();
+                new UserView(300,controller,auth,authId);
             }
-
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 }
