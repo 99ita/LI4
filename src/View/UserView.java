@@ -15,6 +15,7 @@ public class UserView implements ActionListener {
     private HFinder controller;
     private boolean auth;
     private int authId;
+    private int hotelId;
     private int currFrame; //0 - Base; 1- login; 2- register; 3- listingHotels
     private JFrame main;
 
@@ -166,9 +167,9 @@ public class UserView implements ActionListener {
             listingHotels(currFrame,true);
         }else if(currFrame == 100){
             login(true);
-        }else if(currFrame == 200) {
+        }else if(currFrame == 200){
             register(true);
-        }else if(currFrame == 300) {
+        }else if(currFrame == 300){
             listingLikes(true);
         }else if(currFrame >= 600){
             editProfile(true);
@@ -244,7 +245,7 @@ public class UserView implements ActionListener {
             moreInfoTitle.setFont(new Font("Calibri", Font.BOLD, 30));
             moreInfoTitle.setBounds(230,40,300,50);
             main.add(moreInfoTitle);
-            addFav = new JButton("Adicionar Aos Favoritos");
+            addFav = new JButton("Adicionar Gosto");
 
             location = new JLabel(controller.getHotelLocationString(dist));
             description = new JLabel(controller.getHotelDescriptionString(dist));
@@ -291,7 +292,7 @@ public class UserView implements ActionListener {
             clearAll();
         }
 
-        if(addFav != null) addFav.setVisible(b);
+        if(addFav != null) addFav.setVisible(b&&auth);
         if(location != null) location.setVisible(b);
         if(description != null) description.setVisible(b);
         if(type != null) type.setVisible(b);
@@ -418,7 +419,15 @@ public class UserView implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == back) {
+        if(e.getSource() == deleteL){
+            try {
+                controller.removeFav(authId,hotelId);
+                listingLikes(true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        else if (e.getSource() == back) {
             main.dispose();
             try {
                 new MainView(controller, auth, authId);
@@ -432,18 +441,22 @@ public class UserView implements ActionListener {
                     try {
                         authId = controller.login(usernameText.getText(), String.valueOf(passwordText.getPassword()));
                         success.setVisible(true);
+                        auth = true;
                         break;
                     } catch (Exception ex) {
                         erro.setVisible(true);
+                        auth = false;
                     }
                 case 200:
                     try {
                         authId = controller.register(usernameText.getText(), String.valueOf(passwordText.getPassword()), String.valueOf(confPasswordText.getPassword()), emailText.getText(), telemovelText.getText());
                         System.out.println(usernameText.getText() + String.valueOf(passwordText.getPassword()) + String.valueOf(confPasswordText.getPassword()) + emailText.getText() + telemovelText.getText());
                         success.setVisible(true);
+                        auth = true;
                         break;
                     } catch (Exception ex) {
                         erro.setVisible(true);
+                        auth = false;
                     }
                 default:
                     try {
@@ -455,13 +468,18 @@ public class UserView implements ActionListener {
                     break;
             }
         }else if(e.getSource() == select){
-            int hotelId;
             if(currFrame == 300){
                 hotelId = controller.getHotelLikesIndex(authId,listAux1L.getSelectedIndex());
             }else {
                 hotelId = listAux1.getSelectedIndex();
             }
             moreInfo(hotelId, true);
+        }else if(e.getSource() == addFav){
+            try {
+                controller.addFav(authId,hotelId);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
 
     }

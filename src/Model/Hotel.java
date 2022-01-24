@@ -2,6 +2,8 @@ package Model;
 
 import Model.Location;
 
+import java.io.IOException;
+
 public class Hotel {
     private HotelDAO dao;
 
@@ -14,7 +16,8 @@ public class Hotel {
     private int likes;
 
 
-    public Hotel(int id, String name, Location location, String description, String type, int capacity, int likes) {
+    public Hotel(HotelDAO dao, int id, String name, Location location, String description, String type, int capacity, int likes) {
+        this.dao = dao;
         this.id = id;
         this.name = name;
         this.location = location;
@@ -24,6 +27,15 @@ public class Hotel {
         this.likes = likes;
     }
 
+    public void removeLike() throws IOException {
+        likes--;
+        dao.removeLike(id);
+    }
+
+    public void addLike(int id) throws IOException {
+        likes++;
+        dao.addLike(id);
+    }
 
     public Location getLocation() {
         return location;

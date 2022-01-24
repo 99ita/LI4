@@ -2,9 +2,12 @@ package Controller;
 
 
 import Model.Hotel;
+import Model.HotelDAO;
 import Model.User;
+import Model.UserDAO;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +21,7 @@ public class HFinder{
 
 
 
-    public HFinder(){
+    public HFinder() throws IOException {
         daoH = new HotelDAO("saves\\hotels.save");
         daoU = new UserDAO("saves\\users.save");
         this.hotels = daoH.getHotels();
@@ -34,11 +37,26 @@ public class HFinder{
     }
 
 
+    public void addFav(int idu, int idh) throws IOException {
+        users.get(idu).addLike(idh);
+        boolean b = users.get(idu).addLike(idh);
+        if(b) hotels.get(idh).addLike(idh);
+    }
+
+
+
+    public void removeFav(int idu, int idh) throws IOException {
+        users.get(idu).removeLike(idh);
+        boolean b = users.get(idu).removeLike(idh);
+        if(b) hotels.get(idh).removeLike();
+    }
+
     public int register(String username, String password, String confPassword, String email, String telemovel) throws Exception{
         if(!password.equals(confPassword)) throw new Exception();
         int idu = daoU.getNextId();
-        users.add(new User(idu, username, password, email, telemovel, new ArrayList<>()));
-        daoU.add(idu, username, password, email, telemovel);
+        System.out.println("bbbb"+idu);
+        users.add(new User(daoU, idu, username, password, email, telemovel, new ArrayList<>()));
+        daoU.add(username, password, email, telemovel);
         return idu;
     }
 
